@@ -11,6 +11,10 @@ export interface AuthPayload {
 
 export interface AuthRequest extends Request {
   user?: AuthPayload;
+  body: any;
+  params: { [key: string]: string };
+  query: { [key: string]: any };
+  headers: { [key: string]: string | string[] | undefined };
 }
 
 export interface UserResponse {

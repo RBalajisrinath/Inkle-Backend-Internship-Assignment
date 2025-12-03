@@ -9,14 +9,16 @@ export const authenticate = async (
   next: NextFunction
 ): Promise<void> => {
   try {
-    const token = req.headers.authorization?.replace('Bearer ', '');
+    const authHeader = req.headers.authorization;
+    const token = Array.isArray(authHeader) ? authHeader[0] : authHeader;
+    const bearerToken = token?.replace('Bearer ', '');
 
-    if (!token) {
+    if (!bearerToken) {
       res.status(401).json({ error: 'Authentication required' });
       return;
     }
 
-    const decoded = jwt.verify(token, config.jwtSecret) as AuthPayload;
+    const decoded = jwt.verify(bearerToken, config.jwtSecret) as AuthPayload;
     req.user = decoded;
     next();
   } catch (error) {
