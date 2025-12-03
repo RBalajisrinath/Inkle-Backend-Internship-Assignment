@@ -1,0 +1,125 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  USER
+  ADMIN
+  OWNER
+}
+
+enum ActivityType {
+  POST_CREATED
+  POST_LIKED
+  USER_FOLLOWED
+  POST_DELETED
+  USER_DELETED
+}
+
+model User {
+  id        String   @id @default(uuid())
+  username  String   @unique
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  bio       String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  posts              Post[]
+  likes              Like[]
+  activities         Activity[]        @relation("UserActivities")
+  
+  following          Follow[]          @relation("UserFollowing")
+  followers          Follow[]          @relation("UserFollowers")
+  
+  blocking           Block[]           @relation("UserBlocking")
+  blockedBy          Block[]           @relation("UserBlockedBy")
+
+  @@index([username])
+  @@index([email])
+}
+
+model Post {
+  id        String   @id @default(uuid())
+  content   String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  likes      Like[]
+  activities Activity[]
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+model Like {
+  id        String   @id @default(uuid())
+  userId    String
+  postId    String
+  createdAt DateTime @default(now())
+
+  user       User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post       Post       @relation(fields: [postId], references: [id], onDelete: Cascade)
+  activities Activity[]
+
+  @@unique([userId, postId])
+  @@index([userId])
+  @@index([postId])
+}
+
+model Follow {
+  id          String   @id @default(uuid())
+  followerId  String
+  followingId String
+  createdAt   DateTime @default(now())
+
+  follower   User       @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade)
+  following  User       @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade)
+  activities Activity[]
+
+  @@unique([followerId, followingId])
+  @@index([followerId])
+  @@index([followingId])
+}
+
+model Block {
+  id        String   @id @default(uuid())
+  blockerId String
+  blockedId String
+  createdAt DateTime @default(now())
+
+  blocker User @relation("UserBlocking", fields: [blockerId], references: [id], onDelete: Cascade)
+  blocked User @relation("UserBlockedBy", fields: [blockedId], references: [id], onDelete: Cascade)
+
+  @@unique([blockerId, blockedId])
+  @@index([blockerId])
+  @@index([blockedId])
+}
+
+model Activity {
+  id         String       @id @default(uuid())
+  type       ActivityType
+  actorId    String
+  postId     String?
+  likeId     String?
+  followId   String?
+  metadata   Json?
+  createdAt  DateTime     @default(now())
+
+  actor  User    @relation("UserActivities", fields: [actorId], references: [id], onDelete: Cascade)
+  post   Post?   @relation(fields: [postId], references: [id], onDelete: Cascade)
+  like   Like?   @relation(fields: [likeId], references: [id], onDelete: Cascade)
+  follow Follow? @relation(fields: [followId], references: [id], onDelete: Cascade)
+
+  @@index([actorId])
+  @@index([createdAt])
+  @@index([type])
+}
