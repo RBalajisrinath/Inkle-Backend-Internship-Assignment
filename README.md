@@ -244,13 +244,3 @@ CORS_ORIGIN=*
 
 5. **Seed Database**
 - Go to service → "Shell" → Run: `npm run seed`
-
-Your API will be live at: `https://your-app.onrender.com`
-
-## 📄 License
-
-ISC
-
-## 👤 Author
-
-Created for Inkle Backend Intern Assignment
