@@ -34,7 +34,226 @@ A robust social networking API with role-based permissions, activity tracking, a
 - **Authentication**: JWT + bcrypt
 - **Validation**: express-validator
 
-## 🛠️ Setup Instructions
+## 🛠️ Local Development Setup
+
+### Prerequisites
+
+- Node.js (v18+)
+- PostgreSQL (v14+) or a cloud database (Supabase/Neon)
+- Git
+- Postman (for API testing)
+
+### Step-by-Step Setup
+
+1. **Clone the repository**
+```bash
+git clone https://github.com/RBalajisrinath/Inkle-Backend-Internship-Assignment.git
+cd Inkle-Backend-Internship-Assignment
+```
+
+2. **Install dependencies**
+```bash
+npm install
+```
+
+3. **Database Setup Options**
+
+#### Option A: Local PostgreSQL (Recommended for Development)
+
+Install PostgreSQL locally:
+- **Windows**: Download from [postgresql.org](https://www.postgresql.org/download/windows/)
+- **macOS**: `brew install postgresql` or use [Postgres.app](https://postgresapp.com/)
+- **Linux**: `sudo apt-get install postgresql postgresql-contrib`
+
+Create database:
+```bash
+# Start PostgreSQL service
+# Windows: Start from Services or pgAdmin
+# macOS/Linux: sudo service postgresql start
+
+# Connect to PostgreSQL
+psql -U postgres
+
+# Create database
+CREATE DATABASE social_feed_db;
+\q
+```
+
+#### Option B: Cloud Database (Easier Setup)
+
+**Supabase (Recommended)**:
+1. Go to [supabase.com](https://supabase.com)
+2. Create new project
+3. Go to Settings → Database
+4. Copy connection string
+
+**Neon**:
+1. Go to [neon.tech](https://neon.tech)
+2. Create new project
+3. Copy connection string
+
+4. **Configure environment variables**
+
+Create a `.env` file in the project root:
+
+```env
+# Server Configuration
+PORT=3000
+NODE_ENV=development
+
+# Database Configuration (Choose one based on your setup)
+
+# Option A: Local PostgreSQL
+DATABASE_URL="postgresql://postgres:yourpassword@localhost:5432/social_feed_db"
+
+# Option B: Supabase
+# DATABASE_URL="postgresql://postgres.[PASSWORD]@db.[PROJECT-REF].supabase.co:5432/postgres"
+
+# Option C: Neon
+# DATABASE_URL="postgresql://[user]:[password]@[hostname]/[dbname]"
+
+# JWT Configuration
+JWT_SECRET=your-super-secret-jwt-key-change-this-in-production
+JWT_EXPIRE=7d
+
+# CORS (allow all origins for development)
+CORS_ORIGIN=*
+```
+
+5. **Initialize Database**
+
+```bash
+# Generate Prisma Client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev
+
+# Seed database with test data (optional but recommended)
+npm run seed
+```
+
+6. **Start Development Server**
+
+```bash
+# Start with hot reload
+npm run dev
+
+# Or build and start production version locally
+npm run build
+npm start
+```
+
+### 🔍 Verify Local Setup
+
+1. **Check if server is running**:
+   - Open browser: `http://localhost:3000`
+   - Should see: `{"message": "Social Activity Feed API", "version": "1.0.0", "status": "running"}`
+
+2. **Check health endpoint**:
+   - Open browser: `http://localhost:3000/health`
+   - Should see: `{"status": "ok", "timestamp": "..."}`
+
+3. **Test API endpoint**:
+   ```bash
+   # Using curl (if available)
+   curl http://localhost:3000/api/posts
+   
+   # Should return authentication required error (which means API is working)
+   ```
+
+### 🧪 Testing with Sample Data
+
+After running `npm run seed`, you can test with these accounts:
+
+```
+OWNER ACCOUNT:
+  Email: owner@example.com
+  Password: owner123
+
+ADMIN ACCOUNT:
+  Email: admin@example.com  
+  Password: admin123
+
+REGULAR USER ACCOUNTS:
+  Email: alice@example.com | Password: user123
+  Email: bob@example.com | Password: user123
+  Email: charlie@example.com | Password: user123
+```
+
+### 📡 Testing API Endpoints Locally
+
+1. **Import Postman Collection**:
+   - Open Postman
+   - Click "Import" → Select `postman_collection.json`
+   - Set base URL to `http://localhost:3000`
+
+2. **Manual Testing Steps**:
+   ```bash
+   # 1. Login to get token
+   POST http://localhost:3000/api/auth/login
+   {
+     "email": "alice@example.com",
+     "password": "user123"
+   }
+   
+   # 2. Copy the returned token
+   # 3. Add to headers for protected routes:
+   Authorization: Bearer <your-token>
+   
+   # 4. Test protected endpoint
+   GET http://localhost:3000/api/users/profile
+   ```
+
+### 🔧 Development Commands
+
+```bash
+# Development with auto-reload
+npm run dev
+
+# Type checking
+npm run build
+
+# Database management
+npx prisma studio          # Visual database browser
+npx prisma migrate reset   # Reset database
+npx prisma db seed        # Re-run seed data
+
+# View logs
+# Logs appear in terminal where you ran npm run dev
+```
+
+### 🐛 Troubleshooting Local Setup
+
+**Database Connection Issues**:
+```bash
+# Check if PostgreSQL is running
+# Windows: Check Services
+# macOS/Linux: sudo service postgresql status
+
+# Test database connection
+npx prisma db pull
+```
+
+**Port Already in Use**:
+```bash
+# Check what's using port 3000
+# Windows: netstat -ano | findstr :3000
+# macOS/Linux: lsof -i :3000
+
+# Change port in .env file
+PORT=3001
+```
+
+**Migration Issues**:
+```bash
+# Reset and recreate database
+npx prisma migrate reset
+npx prisma migrate dev
+npm run seed
+```
+
+## 🛠️ Production Deployment
 
 ### Prerequisites
 
