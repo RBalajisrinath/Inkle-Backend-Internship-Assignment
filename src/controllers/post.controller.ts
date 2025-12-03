@@ -1,7 +1,7 @@
 import { Response } from 'express';
 import { validationResult } from 'express-validator';
 import { PostService } from '../services/post.service';
-import { AuthRequest } from '../middleware/auth';
+import { AuthRequest } from '../types';
 
 const postService = new PostService();
 

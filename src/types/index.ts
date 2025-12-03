@@ -1,3 +1,4 @@
+import { Request } from 'express';
 import { Role as PrismaRole, ActivityType as PrismaActivityType } from '@prisma/client';
 
 export { PrismaRole as Role, PrismaActivityType as ActivityType };
@@ -6,6 +7,10 @@ export interface AuthPayload {
   userId: string;
   email: string;
   role: PrismaRole;
+}
+
+export interface AuthRequest extends Request {
+  user?: AuthPayload;
 }
 
 export interface UserResponse {

@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { ActivityService } from '../services/activity.service';
-import { AuthRequest } from '../middleware/auth';
+import { AuthRequest } from '../types';
 
 const activityService = new ActivityService();
 

@@ -1,6 +1,6 @@
 import { Response } from 'express';
 import { AdminService } from '../services/admin.service';
-import { AuthRequest } from '../middleware/auth';
+import { AuthRequest } from '../types';
 
 const adminService = new AdminService();
 

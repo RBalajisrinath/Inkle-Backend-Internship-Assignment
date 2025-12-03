@@ -1,11 +1,7 @@
-import { Request, Response, NextFunction } from 'express';
+import { Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
 import { config } from '../config';
-import { AuthPayload, Role } from '../types';
-
-export interface AuthRequest extends Request {
-  user?: AuthPayload;
-}
+import { AuthPayload, Role, AuthRequest } from '../types';
 
 export const authenticate = async (
   req: AuthRequest,
